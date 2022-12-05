@@ -38,6 +38,9 @@ const userModel = {
     }
     throw new Error(`Couldn't find user with id: ${id}`);
   },
+  createNewUser: (userObj) => {
+    database.push(userObj);
+  }
 };
   
   module.exports = { database, userModel };
