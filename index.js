@@ -1,9 +1,11 @@
 const express = require("express");
 const app = express();
 const path = require("path");
+const session = require("express-session")
 const ejsLayouts = require("express-ejs-layouts");
 const reminderController = require("./controller/reminder_controller");
 const authController = require("./controller/auth_controller");
+const passport = require("./middleware/passport");
 
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -11,7 +13,30 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use(ejsLayouts);
 
+
+
+
 app.set("view engine", "ejs");
+app.use(express.static(path.join(__dirname, "public")));
+
+app.use(
+  session({
+    secret: "secret",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: false,
+      maxAge: 24 * 60 * 60 * 1000,
+    },
+  })
+);
+
+app.use(express.json());
+app.use(ejsLayouts);
+// app.use(express.urlencoded({ extended: true }));
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Routes start here
 
