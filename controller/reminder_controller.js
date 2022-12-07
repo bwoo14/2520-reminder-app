@@ -1,4 +1,5 @@
 let database = require("../database");
+const userControl = require("../controller/userController")
 
 let remindersController = {
   list: (req, res) => {
@@ -41,11 +42,33 @@ let remindersController = {
   },
 
   update: (req, res) => {
-    // implement this code
+    // Implement this code
+    const userShow = userControl.getUserById(req.user.id);
+    let reminderFind= req.params.id
+    let searchResult = userShow.reminders.find(function(reminder){
+      return reminder.id == reminderFind;
+    });
+    const index = userShow.reminders.indeOf(searchResult)
+    
+    searchResult.title = req.body.title
+    searchResult.description = req.body.description
+    searchResult.completed = (req.body.completed === "true")
+
+    userShow.reminders[index] = searchResult
+    res.render("reminder/index", { reminder: userShow.reminders})
   },
 
   delete: (req, res) => {
     // Implement this code
+    const userShow = userControl.getUserById(req.user.id);
+    let reminderFind = req.params.id
+    let searchResult = userShow.reminders.find(function (reminder) {
+      return reminder.id == reminderFind;
+    })
+
+    const index = userShow.reminders.indeOf(searchResult)
+    userShow.reminder.splice(index, 1)
+    res.render("reminder/index", {reminders:userShow.reminders})
   },
 };
 
