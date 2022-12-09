@@ -1,8 +1,11 @@
+const userController = require("../controller/userController");
 let database = require("../database");
 
 let remindersController = {
   list: (req, res) => {
-    res.render("reminder/index", { reminders: database.cindy.reminders });
+    console.log(req.user)
+    const userToShow = userController.getUserById(req.user.id);
+    res.render("reminder/index", { reminders: userToShow.reminders });
   },
 
   new: (req, res) => {
@@ -41,11 +44,32 @@ let remindersController = {
   },
 
   update: (req, res) => {
-    // implement this code
+    const userVisibility = userController.getUserById(req.user.id);
+    let reminderToFind = req.params.id
+    let searchResult = userVisibility.reminders.find(function (reminder) {
+      return reminder.id == reminderToFind;
+    });
+
+    const index = userVisibility.reminders.indexOf(searchResult)
+
+    searchResult.title = req.body.title
+    searchResult.description = req.body.description
+    searchResult.completed = (req.body.completed === 'true')
+
+    userVisibility.reminders[index] = searchResult
+    res.render("reminder/index", { reminders: userVisibility.reminders });
   },
 
   delete: (req, res) => {
-    // Implement this code
+    const userVisibility = userController.getUserById(req.user.id);
+    let reminderToFind = req.params.id
+    let searchResult = userVisibility.reminders.find(function (reminder) {
+      return reminder.id == reminderToFind;
+    });
+
+    const index = userVisibility.reminders.indexOf(searchResult);
+    userVisibility.reminders.splice(index, 1)
+    res.render("reminder/index", { reminders: userVisibility.reminders });
   },
 };
 
